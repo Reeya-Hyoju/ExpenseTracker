@@ -1,0 +1,49 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\Dell\\Desktop\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker-UI\\ExpenseTracker-UI\\obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\scopedcss\\bundle\\ExpenseTracker-UI.styles.css",
+      "PackagePath": "staticwebassets\\ExpenseTracker-UI.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\Dell\\Desktop\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker-UI\\ExpenseTracker-UI\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\Dell\\Desktop\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker-UI\\ExpenseTracker-UI\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Dell\\Desktop\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker-UI\\ExpenseTracker-UI\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Dell\\Desktop\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker-UI\\ExpenseTracker-UI\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\Dell\\Desktop\\ExpenseTracker\\ExpenseTracker\\ExpenseTracker-UI\\ExpenseTracker-UI\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.ExpenseTracker-UI.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.ExpenseTracker-UI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.build.ExpenseTracker-UI.props",
+      "PackagePath": "build\\ExpenseTracker-UI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.buildMultiTargeting.ExpenseTracker-UI.props",
+      "PackagePath": "buildMultiTargeting\\ExpenseTracker-UI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.buildTransitive.ExpenseTracker-UI.props",
+      "PackagePath": "buildTransitive\\ExpenseTracker-UI.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

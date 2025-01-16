@@ -1,0 +1,152 @@
+﻿@page "/alltransaction"
+@using ExpenseTracker.Application.Dtos.Transaction
+@using ExpenseTracker.Application.Services.Tags
+@using ExpenseTracker.Application.Services.Transaction
+@using ExpenseTracker.Application.Services.User
+@using ExpenseTracker.Domain.Enums
+@inject IUserService UserService
+@inject ITransactionService TransactionService
+@inject ITagService TagService
+
+<h3>All Transactions </h3>
+<!-- Filter Section -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Filter Transactions</h5>
+        <div class="row g-3">
+            <!-- Search Bar -->
+            <div class="col-md-12 mb-3">
+                <input type="text" class="form-control" placeholder="Search by Title" @bind="searchQuery" onsubmit="ApplyFilter" />
+            </div>
+
+            <!-- Transaction Type Dropdown -->
+            <div class="col-md-6">
+                <select class="form-select" @bind="selectedTransactionType">
+                    <option value="">Select Type</option>
+                    @foreach (var type in transactionTypes)
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Tags Dropdown -->
+            <div class="col-md-6">
+                <select class="form-select" @bind="selectedTag">
+                    <option value="">Select Tag</option>
+                    @foreach (var tag in tags)
+                    {
+                        <option value="@tag.Name">@tag.Name</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Date Range (Optional) -->
+            <div class="col-md-6">
+                <input type="date" class="form-control" @bind="startDate" />
+            </div>
+            <div class="col-md-6">
+                <input type="date" class="form-control" @bind="endDate" />
+            </div>
+        </div>
+        <button class="btn btn-primary mt-3 w-100" @onclick="ApplyFilter">Apply Filter</button>
+    </div>
+</div>
+<!-- Total Balance and Transaction List -->
+<div class="row">
+    <!-- Total Balance Card -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Balance as of Today</h5>
+                <h2 class="text-success">@currency @totalBalance</h2>
+                <p>Total Transactions: @totalTransactions</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction List Table -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Transaction List</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (transactions.Any())
+                        {
+                            @foreach (var txn in transactions)
+                            {
+                                <tr>
+                                    <td>@txn.Title</td>
+                                    <td>@currency @txn.Amount</td>
+                                    <td>@txn.Type</td>
+                                    <td>@txn.Date.ToString("yyyy-MM-dd")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center">No transactions available.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    // fetch curreny from user
+
+    private List<string> transactionTypes = Enum.GetNames(typeof(TransactionType)).ToList();
+    private string currency;
+    private string selectedTransactionType;
+    private string selectedTag;
+    private DateTime? startDate;
+    private DateTime? endDate;
+    private string? searchQuery;
+    private IEnumerable<GetTransactionResponse> transactions = new List<GetTransactionResponse>();
+    private IEnumerable<ExpenseTracker.Domain.Entities.Tags> tags = new List<ExpenseTracker.Domain.Entities.Tags>();
+
+    private decimal totalBalance;
+    private int totalTransactions;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTransactions();
+
+    }
+    private async Task LoadTransactions()
+    {
+        currency = UserService.GetUserCurrency();
+        totalBalance = await UserService.GetUserBalanceAsync();
+        totalTransactions = TransactionService.CountTransaction();
+        transactions = await TransactionService.GetAllTransactionsAsync();
+        tags = await TagService.GetAllTagsAsync();
+
+        transactions = transactions.OrderByDescending(t => t.Date).ToList();
+    }
+    private async Task ApplyFilter()
+    {
+        var filterRequest = new FilterTransactionRequest
+            {
+                Type = string.IsNullOrEmpty(selectedTransactionType) ? null : (TransactionType?)Enum.Parse(typeof(TransactionType), selectedTransactionType),
+                TagId = tags.FirstOrDefault(t => t.Name == selectedTag)?.Id,
+                StartDate = startDate,
+                EndDate = endDate,
+                SearchQuery = searchQuery
+            };
+
+        transactions = await TransactionService.FilterTransactionAsync(filterRequest);
+        transactions = transactions.OrderByDescending(t => t.Date).ToList();
+
+    }
+}

@@ -1,0 +1,122 @@
+﻿@page "/transaction"
+@using ExpenseTracker.Application.Dtos.Tag
+@using ExpenseTracker.Application.Dtos.Transaction
+@using ExpenseTracker.Application.Services.Tags
+@using ExpenseTracker.Application.Services.Transaction
+@using ExpenseTracker.Application.Services.User
+@using ExpenseTracker.Domain.Enums
+@using ExpenseTracker.Domain.Entities
+@inject ITagService TagService
+@inject ITransactionService TransactionService
+@inject IUserService UserService
+<h3>Transaction Management Overview</h3>
+<div class="container mt-5">
+
+    <!-- Add Transaction Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Add New Transaction</h5>
+
+            <EditForm Model="@transaction" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="row g-3">
+                    <!-- Title -->
+                    <div class="col-md-6">
+                        <label for="title" class="form-label">Title</label>
+                        <input id="title" type="text" class="form-control" @bind="@transaction.Title" required />
+                        <ValidationMessage For="@(() => transaction.Title)" class="text-danger" />
+
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="col-md-6">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input id="amount" type="number" class="form-control" @bind="transaction.Amount" required />
+                        <ValidationMessage For="@(() => transaction.Amount)" class="text-danger" />
+                    </div>
+
+                    <!-- Type -->
+                    <div class="col-md-6">
+                        <label for="type" class="form-label">Transaction Type</label>
+                        <select id="type" class="form-select" @bind="@transaction.Type">
+                            @foreach (var type in transactionTypes.Where(t => t != "Debt" && t != "DebtCleared"))
+                            {
+                                <option value="@(Enum.Parse<TransactionType>(type))">@type</option>
+                            }
+                        </select>
+                    </div>
+
+
+                    <!-- Tags -->
+                    <div class="col-md-6">
+                        <label for="tags" class="form-label">Tags</label>
+                        <select id="tags" class="form-select" @bind="transaction.TagsId">
+                            <option value="null" disabled>Select Tag</option>
+                            @foreach (var tag in tags)
+                            {
+                                <option value="@tag.Id">@tag.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Custom Tag -->
+                    <div class="col-md-6">
+                        <label for="customTag" class="form-label">Custom Tag</label>
+                        <input id="customTag" type="text" class="form-control" @bind="transaction.Tags" placeholder="Enter custom tag" />
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="col-12">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea id="notes" class="form-control" rows="3" @bind="transaction.Notes" required></textarea>
+                        <ValidationMessage For="@(() => transaction.Notes)" class="text-danger" />
+                    </div>
+
+                    <!-- Date -->
+                    <div class="col-md-6">
+                        <label for="date" class="form-label">Date</label>
+                        <input id="date" type="date" class="form-control" @bind="transaction.Date" required />
+                        <ValidationMessage For="@(() => transaction.Date)" class="text-danger" />
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-success mt-3 w-100">Add Transaction</button>
+            </EditForm>
+        </div>
+    </div>
+
+
+</div>
+
+@code {
+    private CreateTransactionRequest transaction = new CreateTransactionRequest
+        {
+            Date = DateTime.Now,
+            Tags = string.Empty
+        };
+
+    private List<string> transactionTypes = Enum.GetNames(typeof(TransactionType)).ToList();
+    private IEnumerable<ExpenseTracker.Domain.Entities.Tags> tags = new List<ExpenseTracker.Domain.Entities.Tags>();
+    private IEnumerable<ExpenseTracker.Domain.Entities.Transaction> transactions = new List<ExpenseTracker.Domain.Entities.Transaction>();
+    private decimal totalBalance;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        tags = await TagService.GetAllTagsAsync();
+        //transactions = await TransactionService.GetAllTransactionsAsync();
+        totalBalance = await UserService.GetUserBalanceAsync();
+    }
+
+
+
+    private async Task HandleSubmit()
+    {
+        await TransactionService.AddTransactionAsync(transaction);
+        transaction = new CreateTransactionRequest { Date = DateTime.Now, Tags = string.Empty };
+    }
+}

@@ -1,0 +1,23 @@
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\bin\Debug\net8.0\ExpenseTracker.Domain.deps.json
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\bin\Debug\net8.0\ExpenseTracker.Domain.dll
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\bin\Debug\net8.0\ExpenseTracker.Domain.pdb
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.AssemblyInfoInputs.cache
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.AssemblyInfo.cs
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.csproj.CoreCompileInputs.cache
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.dll
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\refint\ExpenseTracker.Domain.dll
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.pdb
+D:\Skills\Desktop App\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ref\ExpenseTracker.Domain.dll
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\bin\Debug\net8.0\ExpenseTracker.Domain.deps.json
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\bin\Debug\net8.0\ExpenseTracker.Domain.dll
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\bin\Debug\net8.0\ExpenseTracker.Domain.pdb
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.AssemblyInfoInputs.cache
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.AssemblyInfo.cs
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.dll
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\refint\ExpenseTracker.Domain.dll
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.pdb
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ref\ExpenseTracker.Domain.dll
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker.Domain\obj\Debug\net8.0\ExpenseTracker.Domain.sourcelink.json

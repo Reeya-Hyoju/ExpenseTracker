@@ -1,0 +1,279 @@
+﻿@page "/"
+
+@using ExpenseTracker.Application.Dtos.Transaction
+@using ExpenseTracker.Application.Services.Transaction
+@using ExpenseTracker.Application.Services.User
+@inject ITransactionService TransactionService
+@inject IUserService UserService
+
+<!-- Date Picker Section for Filtering -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <label for="fromDate" class="form-label fw-bold">From Date</label>
+        <InputDate id="fromDate" class="form-control" @bind-Value="fromDate" />
+    </div>
+    <div class="col-md-6">
+        <label for="toDate" class="form-label fw-bold">To Date</label>
+        <InputDate id="toDate" class="form-control" @bind-Value="toDate" />
+    </div>
+</div>
+
+<!-- Apply Button -->
+<div class="text-center">
+    <button class="btn btn-primary" @onclick="ApplyDateRangeFilter">Apply</button>
+</div>
+
+<!-- Highest/Lowest Transactions Section -->
+<h3 class="my-4 text-center">Transaction Highlights</h3>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-header bg-success text-white">Highest Inflow</div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    @if (highestInflow?.Amount == 0 || highestInflow?.Amount == null)
+                    {
+                        <span>No Inflow</span>
+                    }
+                    else
+                    {
+                        <span>@currency @highestInflow?.Amount</span>
+                    }
+                </h5>
+                <p class="card-text">
+                    @if (string.IsNullOrEmpty(highestInflow?.Title))
+                    {
+                        <span>No Source Available</span>
+                    }
+                    else
+                    {
+                        <span>Source: @highestInflow?.Title</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-header bg-danger text-white">Highest Outflow</div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    @if (highestOutflow?.Amount == 0 || highestOutflow?.Amount == null)
+                    {
+                        <span>No Outflow</span>
+                    }
+                    else
+                    {
+                        <span>@currency @highestOutflow?.Amount</span>
+                    }
+                </h5>
+                <p class="card-text">
+                    @if (string.IsNullOrEmpty(highestOutflow?.Title))
+                    {
+                        <span>No Source Available</span>
+                    }
+                    else
+                    {
+                        <span>Source: @highestOutflow?.Title</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-header bg-warning text-dark">Highest Debt</div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    @if (highestDebt?.Amount == 0 || highestDebt?.Amount == null)
+                    {
+                        <span>No Debt</span>
+                    }
+                    else
+                    {
+                        <span>@currency @highestDebt?.Amount</span>
+                    }
+                </h5>
+                <p class="card-text">
+                    @if (string.IsNullOrEmpty(highestDebt?.Title))
+                    {
+                        <span>No Source Available</span>
+                    }
+                    else
+                    {
+                        <span>Source: @highestDebt?.Title</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Top 5 Highest/Lowest Transactions Section -->
+<h3 class="my-4 text-center">Top 5 Transactions</h3>
+<div class="row">
+    <!-- Highest 5 -->
+    <div class="col-md-6">
+        <h5 class="text-center">Top 5 Highest Transactions</h5>
+        <div class="list-group">
+            @foreach (var transaction in topHighestTransactions)
+            {
+                <div class="list-group-item">
+                    <h6 class="mb-1">@currency @transaction.Amount</h6>
+                    <p class="mb-1">@transaction.Title</p>
+                    <small>@transaction.Date</small>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- Lowest 5 -->
+    <div class="col-md-6">
+        <h5 class="text-center">Top 5 Lowest Transactions</h5>
+        <div class="list-group">
+            @foreach (var transaction in topLowestTransactions)
+            {
+                <div class="list-group-item">
+                    <h6 class="mb-1">@currency @transaction.Amount</h6>
+                    <p class="mb-1">@transaction.Title</p>
+                    <small>@transaction.Date</small>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- Pending Debts Section -->
+<h3 class="my-4 text-center">Pending Debts</h3>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col" class="text-center">Source</th>
+                <th scope="col" class="text-center">Amount</th>
+                <th scope="col" class="text-center">Due Date</th>
+                <th scope="col" class="text-center">Status</th>
+                <th scope="col" class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var debt in pendingDebts)
+            {
+                <tr>
+                    <td class="text-center align-middle">@debt.Source</td>
+                    <td class="text-center align-middle">@currency @debt.Amount</td>
+                    <td class="text-center align-middle">@debt.DueDate</td>
+                    <td class="text-center align-middle">
+                        <span class="badge @(debt.IsClearedDebt.Value ? "badge-success" : "badge-warning")">
+                            @(debt.IsClearedDebt.Value ? "Cleared" : "Pending")
+                        </span>
+                    </td>
+                    <td class="text-center align-middle">
+                        @if (!debt.IsClearedDebt.Value)
+                        {
+                            <button class="btn btn-sm btn-danger" @onclick="() => ClearDebt(debt.Id)">
+                                Clear Debt
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private IEnumerable<GetAllPendingDebts> pendingDebts = new List<GetAllPendingDebts>();
+    private GetTransactionResponse? highestInflow;
+    private GetTransactionResponse? highestOutflow;
+    private GetTransactionResponse? highestDebt;
+    private string currency;
+
+    private IEnumerable<GetTransactionResponse> topHighestTransactions = new List<GetTransactionResponse>();
+    private IEnumerable<GetTransactionResponse> topLowestTransactions = new List<GetTransactionResponse>();
+
+    private DateTime? fromDate;
+    private DateTime? toDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currency = UserService.GetUserCurrency();
+        await LoadPendingDebts();
+        LoadTransactionHighlights();
+        LoadTopTransactions();
+    }
+
+    private async Task LoadPendingDebts()
+    {
+        try
+        {
+            pendingDebts = await TransactionService.GetAllPendingDebts();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading pending debts: {ex.Message}");
+        }
+    }
+    private void LoadTopTransactions()
+    {
+        try
+        {
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+
+                topHighestTransactions = TransactionService.GetTopHighestTransactions(fromDate.Value, toDate.Value);
+                topLowestTransactions = TransactionService.GetTopLowestTransactions(fromDate.Value, toDate.Value);
+            }
+            else
+            {
+                topHighestTransactions = TransactionService.GetTopHighestTransactions();
+                topLowestTransactions = TransactionService.GetTopLowestTransactions();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading top transactions: {ex.Message}");
+        }
+    }
+
+
+    private void LoadTransactionHighlights()
+    {
+        try
+        {
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                highestInflow = TransactionService.GetHighestInflow(fromDate.Value, toDate.Value);
+                highestOutflow = TransactionService.GetHighestOutflow(fromDate.Value, toDate.Value);
+                highestDebt = TransactionService.GetHighestDebt(fromDate.Value, toDate.Value);
+            }
+            else
+            {
+                highestInflow = TransactionService.GetHighestInflow();
+                highestOutflow = TransactionService.GetHighestOutflow();
+                highestDebt = TransactionService.GetHighestDebt();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading transaction highlights: {ex.Message}");
+        }
+    }
+
+    private async Task ClearDebt(Guid debtId)
+    {
+        try
+        {
+            await TransactionService.ClearDebtAsync(debtId);
+            await LoadPendingDebts();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error clearing debt: {ex.Message}");
+        }
+    }
+    private async Task ApplyDateRangeFilter()
+    {
+        LoadTransactionHighlights();
+        LoadTopTransactions();
+    }
+}

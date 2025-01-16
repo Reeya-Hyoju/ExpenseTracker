@@ -1,0 +1,186 @@
+﻿@page "/debt"
+@using ExpenseTracker.Application.Dtos.Transaction
+@using ExpenseTracker.Application.Services.Transaction
+@using ExpenseTracker.Application.Services.User
+@inject IUserService UserService
+@inject ITransactionService TransactionService
+
+<!-- Debt Management Overview -->
+<h3>Debt Management Overview</h3>
+
+<!-- Overview Cards -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Inflows</h5>
+                <h2 class="text-success">@currency @totalInflows</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Outflows</h5>
+                <h2 class="text-danger">@currency @totalOutflows</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Debt</h5>
+                <h2 class="text-warning">@currency @totalDebt</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Cleared Debt</h5>
+                <h2 class="text-info">@currency @totalClearedDebt</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Side-by-Side Layout for Table and Form -->
+<div class="row">
+    <!-- Pending Debts Table -->
+    @*  <div class="col-md-8">
+    <h3 class="my-4 text-center">Pending Debts</h3>
+    <div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped">
+    <thead class="thead-dark">
+    <tr>
+    <th scope="col" class="text-center">Source</th>
+    <th scope="col" class="text-center">Amount</th>
+    <th scope="col" class="text-center">Due Date</th>
+    <th scope="col" class="text-center">Status</th>
+    <th scope="col" class="text-center">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var debt in pendingDebts)
+    {
+    <tr>
+    <td class="text-center align-middle">@debt.Source</td>
+    <td class="text-center align-middle">$@debt.Amount</td>
+    <td class="text-center align-middle">@debt.DueDate</td>
+    <td class="text-center align-middle">
+    <span class="badge @(debt.IsClearedDebt.Value ? "badge-success" : "badge-warning")">
+    @(debt.IsClearedDebt.Value ? "Cleared" : "Pending")
+    </span>
+    </td>
+    <td class="text-center align-middle">
+    @if (!debt.IsClearedDebt.Value)
+    {
+    <button class="btn btn-sm btn-danger" @onclick="() => ClearDebt(debt.Id)">
+    Clear Debt
+    </button>
+    }
+    </td>
+    </tr>
+    }
+    </tbody>
+    </table>
+    </div>
+    </div> *@
+    <!-- Add New Debt Form -->
+    <div class="col-12">
+        <h3 class="text-center mb-4">Add New Debt</h3>
+        <EditForm Model="@newDebt" OnValidSubmit="AddDebt">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger p-2 mb-3" />
+
+            <div class="mb-3">
+                <label for="source" class="form-label fw-bold">Source</label>
+                <InputText id="source" class="form-control" @bind-Value="newDebt.Source" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="amount" class="form-label fw-bold">Amount</label>
+                <InputNumber id="amount" class="form-control" @bind-Value="newDebt.Amount" required />
+            </div>
+
+            <div class="mb-4">
+                <label for="dueDate" class="form-label fw-bold">Due Date</label>
+                <InputDate id="dueDate" class="form-control" @bind-Value="newDebt.DueDate" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-plus-circle me-2"></i> Add Debt
+            </button>
+        </EditForm>
+    </div>
+
+</div>
+
+@code {
+    private decimal totalInflows;
+    private decimal totalOutflows;
+    private decimal totalDebt;
+    private decimal totalClearedDebt;
+    private decimal remainingDebt;
+    private string currency;
+    private IEnumerable<GetAllPendingDebts> pendingDebts = new List<GetAllPendingDebts>();
+    private AddDebtRequest newDebt = new AddDebtRequest()
+        {
+            DueDate = DateTime.Today.Date
+        };
+
+
+    private async Task LoadDebtOverview()
+    {
+        try
+        {
+            currency = UserService.GetUserCurrency();
+            var debtOverview = await TransactionService.GetDebtOverview();
+            totalInflows = (decimal)debtOverview.TotalInflows;
+            totalOutflows = (decimal)debtOverview.TotalOutflows;
+            totalDebt = (decimal)debtOverview.TotalDebt;
+            totalClearedDebt = (decimal)debtOverview.TotalClearedDebt;
+            pendingDebts = await TransactionService.GetAllPendingDebts();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading debt overview: {ex.Message}");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDebtOverview();
+    }
+
+    private async Task ClearDebt(Guid debtId)
+    {
+        try
+        {
+            await TransactionService.ClearDebtAsync(debtId);
+            await LoadDebtOverview();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error clearing debt: {ex.Message}");
+        }
+    }
+    private async Task AddDebt()
+    {
+        try
+        {
+            await TransactionService.AddDebtAsync(newDebt);
+
+            await LoadDebtOverview();
+
+            newDebt = new AddDebtRequest();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding debt: {ex.Message}");
+        }
+    }
+}

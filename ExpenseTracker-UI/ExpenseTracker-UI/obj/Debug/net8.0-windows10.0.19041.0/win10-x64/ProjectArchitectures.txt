@@ -1,0 +1,1 @@
+C:\Users\Dell\Desktop\ExpenseTracker\ExpenseTracker\ExpenseTracker-UI\ExpenseTracker-UI\ExpenseTracker-UI.csproj;x64
